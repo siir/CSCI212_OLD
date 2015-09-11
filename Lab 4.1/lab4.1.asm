@@ -13,9 +13,24 @@
 ExitProcess proto,dwExitCode:dword
 
 .data
+arrayB BYTE 12h, 34h, 56h, 78h, 90h, 12h, 34h, 56h, 78h, 90h
 
 .code
 main proc
+	mov esi, OFFSET arrayB
+	mov ecx, SIZEOF arrayB
+
+L1:
+	mov eax, SIZEOF arrayB
+	sub eax, ecx
+
+	mov bl, [esi+eax]
+	xchg bl, [esi+eax+1]
+	mov [esi+eax],bl
+
+	dec ecx
+
+	LOOP L1
 
 	invoke ExitProcess,0
 main endp

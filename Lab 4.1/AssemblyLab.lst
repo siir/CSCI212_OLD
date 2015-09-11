@@ -1,11 +1,13 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:02:56
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:33:54
 lab4.1.asm						     Page 1 - 1
 
 
 				; Program Name:           lab4.1.asm
 
-				; Program Description: Write a program that uses a loop to copy all the elements from an unsigned 
-				;						Word (16-bit) array into an unsigned doubleword (32-bit) array.
+				; Program Description: Write a program with a loop and indexed addressing that exchanges every 
+				;						pair of values in an array with an even number of elements. Therefore, 
+				;						item i will exchange with item i+1, and itemi+2 will exchange with 
+				;						item i+3, and so on.
 				; Author: Chad Dreier
 				; Date: 9/10/2015
 
@@ -15,16 +17,32 @@ lab4.1.asm						     Page 1 - 1
 				ExitProcess proto,dwExitCode:dword
 
  00000000			.data
+ 00000000 12 34 56 78 90	arrayB BYTE 12h, 34h, 56h, 78h, 90h, 12h, 34h, 56h, 78h, 90h
+	   12 34 56 78 90
 
  00000000			.code
  00000000			main proc
+ 00000000  BE 00000000 R		mov esi, OFFSET arrayB
+ 00000005  B9 0000000A			mov ecx, SIZEOF arrayB
+
+ 0000000A			L1:
+ 0000000A  B8 0000000A			mov eax, SIZEOF arrayB
+ 0000000F  2B C1			sub eax, ecx
+
+ 00000011  8A 1C 30			mov bl, [esi+eax]
+ 00000014  86 5C 30 01			xchg bl, [esi+eax+1]
+ 00000018  88 1C 30			mov [esi+eax],bl
+
+ 0000001B  49				dec ecx
+
+ 0000001C  E2 EC			LOOP L1
 
 					invoke ExitProcess,0
- 00000000  6A 00	   *	    push   +000000000h
- 00000002  E8 00000000 E   *	    call   ExitProcess
- 00000007			main endp
+ 0000001E  6A 00	   *	    push   +000000000h
+ 00000020  E8 00000000 E   *	    call   ExitProcess
+ 00000025			main endp
 				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:02:56
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:33:54
 lab4.1.asm						     Symbols 2 - 1
 
 
@@ -36,8 +54,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 DWord	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000000 DWord	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000007 DWord	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000000A DWord	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000025 DWord	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -45,7 +63,8 @@ Procedures, parameters, and locals:
                 N a m e                 Type     Value    Attr
 
 ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000007 Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000025 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 0000000A _TEXT	
 
 
 Symbols:
@@ -61,6 +80,7 @@ Symbols:
 @fardata?  . . . . . . . . . . .	Text   	 FLAT
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
+arrayB . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 
 	   0 Warnings
 	   0 Errors
