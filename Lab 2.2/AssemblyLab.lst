@@ -1,0 +1,108 @@
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:04:19
+lab2.2.asm						     Page 1 - 1
+
+
+				; Program Name:           lab2.2.asm
+
+				; Program Description: Write a program that defines symbolic integer constants for all seven days of the week. Create an array variable that uses the symbols as initializers.
+				; Author: Chad Dreier
+				; Date: 8/31/2015
+
+				.386
+				.model flat,stdcall
+				.stack 4096
+				ExitProcess proto,dwExitCode:dword
+
+ 00000000			.data
+ = 00000001			SUN EQU 1
+ = 00000002			MON EQU 2
+ = 00000003			TUE EQU 3
+ = 00000004			WED EQU 4
+ = 00000005			THU EQU 5
+ = 00000006			FRI EQU 6
+ = 00000007			SAT EQU 7
+
+ 00000000 00000001		week DWORD SUN, MON, TUE, WED, THU, FRI, SAT
+	   00000002
+	   00000003
+	   00000004
+	   00000005
+	   00000006
+	   00000007
+ 0000001C = 00000007		daycount = ($ - week) / 4
+
+ 0000001C 00000000		day DWORD 0
+
+ 00000000			.code
+ 00000000			main proc
+
+					; put values from first day to last day into eax reg to verify
+					
+ 00000000  B9 00000007			mov ecx, daycount				; set ecx reg to max # of days
+ 00000005			L1:
+ 00000005  8B 1D 0000001C R		mov ebx, day					; set ebx to current day (offset of week start address)
+ 0000000B  6B DB 04			imul ebx, 4						; multiply by 4 to get to correct offset
+					
+				; cant figure this out !!!!
+					;mov eax, week + OFFSET			; move day value into eax
+					;no! mov eax, week + (4 * day)	; move day value into eax
+					
+ 0000000E  FF 05 0000001C R		inc day							; increment day counter
+ 00000014  E2 EF			loop L1							; loop
+
+					invoke ExitProcess,0
+ 00000016  6A 00	   *	    push   +000000000h
+ 00000018  E8 00000000 E   *	    call   ExitProcess
+ 0000001D			main endp
+				end main
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:04:19
+lab2.2.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 DWord	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000020 DWord	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000001D DWord	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000001D Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000005 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000003h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+FRI  . . . . . . . . . . . . . .	Number	 00000006h   
+MON  . . . . . . . . . . . . . .	Number	 00000002h   
+SAT  . . . . . . . . . . . . . .	Number	 00000007h   
+SUN  . . . . . . . . . . . . . .	Number	 00000001h   
+THU  . . . . . . . . . . . . . .	Number	 00000005h   
+TUE  . . . . . . . . . . . . . .	Number	 00000003h   
+WED  . . . . . . . . . . . . . .	Number	 00000004h   
+daycount . . . . . . . . . . . .	Number	 00000007h   
+day  . . . . . . . . . . . . . .	DWord	 0000001C _DATA	
+week . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+
+	   0 Warnings
+	   0 Errors
