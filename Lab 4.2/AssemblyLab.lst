@@ -1,0 +1,100 @@
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 14:29:46
+lab3.2.asm						     Page 1 - 1
+
+
+				; Program Name:           lab3.2.asm
+
+				; Program Description: Write a program that uses a loop to calculate the first seven values 
+				;						of the Fibonacci number sequence, described by the following formula: 
+				;						Fib(1) = 1, Fib(2) = 1, Fib(n) = Fib(n – 1) + Fib(n – 2). 
+				;						Store the seven numbers in a BYTE array called fibonacci.
+				; Author: Chad Dreier
+				; Date: 9/3/2015
+
+				.386
+				.model flat,stdcall
+				.stack 4096
+				ExitProcess proto,dwExitCode:dword
+
+ 00000000			.data
+ = 00000006			COUNT = 6
+ 00000000  00000006 [		fibonacci BYTE COUNT DUP(0)
+	    00
+	   ]
+
+ 00000000			.code
+ 00000000			main proc
+
+ 00000000  B8 00000000			mov eax, 0h						; clear eax
+ 00000005  BB 00000000			mov ebx, 0h						; clear ebx
+
+ 0000000A  B0 01			mov al, 1h						; begin with 1h in al register (last loop value)
+					
+ 0000000C  B9 00000006			mov ecx, COUNT					; set ecx counter register for loop
+					
+ 00000011  BE 00000000 R		mov esi,OFFSET fibonacci		; set esi to address of fibonacci variable
+ 00000016			L1:
+					; bh - 2 times ago
+					; ah - 1 times ago
+					; al - this time
+
+ 00000016  88 04 31			mov [esi+ecx], al				; put value of al into memory at correct address
+
+ 00000019  8A FC			mov bh, ah						; move last loop's previous loop result value into bh register - now previous 2 loop's value
+ 0000001B  8A E0			mov ah, al						; move the last loop's result value into ah register - now previous loop's value
+									
+ 0000001D  02 C7			add al, bh						; add last two results together to get current loop's result value
+
+ 0000001F  E2 F5			LOOP L1
+					
+ 00000021  88 04 31			mov [esi+ecx], al				; put value of final loop into memory at correct address
+ 00000024  8B 15 00000000 R		mov edx, DWORD PTR fibonacci	; double check by copying from memory, the last 4 to a register
+
+					invoke ExitProcess,0
+ 0000002A  6A 00	   *	    push   +000000000h
+ 0000002C  E8 00000000 E   *	    call   ExitProcess
+ 00000031			main endp
+				end main
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 14:29:46
+lab3.2.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 DWord	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000006 DWord	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000031 DWord	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000031 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000016 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000003h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+COUNT  . . . . . . . . . . . . .	Number	 00000006h   
+fibonacci  . . . . . . . . . . .	Byte	 00000000 _DATA	
+
+	   0 Warnings
+	   0 Errors
