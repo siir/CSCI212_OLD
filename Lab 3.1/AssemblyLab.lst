@@ -1,0 +1,94 @@
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:01:08
+lab3.1.asm						     Page 1 - 1
+
+
+				; Program Name:           lab3.1.asm
+
+				; Program Description: Write a program that uses the variables below and MOV instructions to 
+				;						copy the value from bigEndian to littleEndian, reversing the order of 
+				;						the bytes. The number’s 32-bit value is understood to be 12345678 
+				;						hexadecimal.
+				; Author: Chad Dreier
+				; Date: 9/3/2015
+
+				.386
+				.model flat,stdcall
+				.stack 4096
+				ExitProcess proto,dwExitCode:dword
+
+ 00000000			.data
+ 00000000 12 34 56 78		bigEndian BYTE 12h,34h,56h,78h
+ 00000004 00000000		littleEndian DWORD 0				
+ 00000008 = 00000007		END_OF_LITTLE = $-1					; Address of littleEndian ending BYTE
+
+ 00000000			.code
+ 00000000			main proc
+					; moves first byte of bigEndian to end of littleEndian
+					; moves bigEndian pointer forward and littleEndian pointer backwards
+
+ 00000000  BE 00000000 R		mov esi, OFFSET bigEndian		; Move ESI register to address of bigEndian start
+ 00000005  BF 00000007 R		mov edi, END_OF_LITTLE			; Move EDI register to address of littleEndian end
+
+ 0000000A  B9 00000004			mov ecx, LENGTHOF bigEndian		; Set loop counter (ECX register) to length of bigEndian
+
+ 0000000F			L1:
+ 0000000F  8A 06			mov al, [esi]					; Copy first BYTE into AL register
+ 00000011  88 07			mov [edi], al					; Copy AL register to memory at EDI
+
+ 00000013  46				inc esi							; Move ESI up a BYTE 
+ 00000014  4F				dec edi							; Move EDI down a BYTE
+ 00000015  E2 F8			LOOP L1							; Loop until all bigEndian BYTEs are processed
+
+					; Check work
+ 00000017  A1 00000000 R		mov eax, DWORD PTR bigEndian
+ 0000001C  8B 1D 00000004 R		mov ebx, DWORD PTR littleEndian
+
+					invoke ExitProcess,0
+ 00000022  6A 00	   *	    push   +000000000h
+ 00000024  E8 00000000 E   *	    call   ExitProcess
+ 00000029			main endp
+				end main
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:01:08
+lab3.1.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 DWord	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000008 DWord	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000029 DWord	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000029 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 0000000F _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000003h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+END_OF_LITTLE  . . . . . . . . .	Number	 00000007h   
+bigEndian  . . . . . . . . . . .	Byte	 00000000 _DATA	
+littleEndian . . . . . . . . . .	DWord	 00000004 _DATA	
+
+	   0 Warnings
+	   0 Errors
