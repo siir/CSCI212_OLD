@@ -13,24 +13,25 @@
 ExitProcess proto,dwExitCode:dword
 
 .data
-arrayB BYTE 12h, 34h, 56h, 78h, 90h, 12h, 34h, 56h, 78h, 90h
+arrayB BYTE 12h, 34h, 56h, 78h, 9Ah, 0BCh, 0DEh, 0F0h, 0Fh, 0EDh, 0CBh, 0A9h, 87h, 65h, 43h, 21h
 
 .code
 main proc
-	mov esi, OFFSET arrayB
-	mov ecx, SIZEOF arrayB
+	mov esi, OFFSET arrayB		; set ESI register to point to the address of arrayB
+	mov ecx, SIZEOF arrayB		; set ECX register equal to the byte size of arrayB
 
+								; BEGIN LOOP
 L1:
-	mov eax, SIZEOF arrayB
-	sub eax, ecx
+	mov eax, SIZEOF arrayB		; copy byte size of arrayB into eax
+	sub eax, ecx				; subtract ECX from EAX - value is how many bytes from the begining to switch
 
-	mov bl, [esi+eax]
-	xchg bl, [esi+eax+1]
-	mov [esi+eax],bl
+	mov bl, [esi+eax]			; copy this byte to BL register
+	xchg bl, [esi+eax+1]		; exchange BL and next byte
+	mov [esi+eax],bl			; copy the next byte that is now in BL into this byte's position
 
-	dec ecx
+	dec ecx						; decrement count down register an extra time to skip the next byte
 
-	LOOP L1
+	LOOP L1						; END LOOP
 
 	invoke ExitProcess,0
 main endp

@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:33:54
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/17/15 14:41:30
 lab4.1.asm						     Page 1 - 1
 
 
@@ -17,32 +17,35 @@ lab4.1.asm						     Page 1 - 1
 				ExitProcess proto,dwExitCode:dword
 
  00000000			.data
- 00000000 12 34 56 78 90	arrayB BYTE 12h, 34h, 56h, 78h, 90h, 12h, 34h, 56h, 78h, 90h
-	   12 34 56 78 90
+ 00000000 12 34 56 78 9A	arrayB BYTE 12h, 34h, 56h, 78h, 9Ah, 0BCh, 0DEh, 0F0h, 0Fh, 0EDh, 0CBh, 0A9h, 87h, 65h, 43h, 21h
+	   BC DE F0 0F ED
+	   CB A9 87 65 43
+	   21
 
  00000000			.code
  00000000			main proc
- 00000000  BE 00000000 R		mov esi, OFFSET arrayB
- 00000005  B9 0000000A			mov ecx, SIZEOF arrayB
+ 00000000  BE 00000000 R		mov esi, OFFSET arrayB		; set ESI register to point to the address of arrayB
+ 00000005  B9 00000010			mov ecx, SIZEOF arrayB		; set ECX register equal to the byte size of arrayB
 
+												; BEGIN LOOP
  0000000A			L1:
- 0000000A  B8 0000000A			mov eax, SIZEOF arrayB
- 0000000F  2B C1			sub eax, ecx
+ 0000000A  B8 00000010			mov eax, SIZEOF arrayB		; copy byte size of arrayB into eax
+ 0000000F  2B C1			sub eax, ecx				; subtract ECX from EAX - value is how many bytes from the begining to switch
 
- 00000011  8A 1C 30			mov bl, [esi+eax]
- 00000014  86 5C 30 01			xchg bl, [esi+eax+1]
- 00000018  88 1C 30			mov [esi+eax],bl
+ 00000011  8A 1C 30			mov bl, [esi+eax]			; copy this byte to BL register
+ 00000014  86 5C 30 01			xchg bl, [esi+eax+1]		; exchange BL and next byte
+ 00000018  88 1C 30			mov [esi+eax],bl			; copy the next byte that is now in BL into this byte's position
 
- 0000001B  49				dec ecx
+ 0000001B  49				dec ecx						; decrement count down register an extra time to skip the next byte
 
- 0000001C  E2 EC			LOOP L1
+ 0000001C  E2 EC			LOOP L1						; END LOOP
 
 					invoke ExitProcess,0
  0000001E  6A 00	   *	    push   +000000000h
  00000020  E8 00000000 E   *	    call   ExitProcess
  00000025			main endp
 				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:33:54
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/17/15 14:41:30
 lab4.1.asm						     Symbols 2 - 1
 
 
@@ -54,7 +57,7 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 DWord	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 0000000A DWord	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000010 DWord	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 00000025 DWord	  Public  'CODE'	
 
 

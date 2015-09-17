@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:48:03
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/17/15 14:45:31
 lab4.2.asm						     Page 1 - 1
 
 
@@ -21,27 +21,30 @@ lab4.2.asm						     Page 1 - 1
 
  00000000			.code
  00000000			main proc
- 00000000  B9 00000004			mov ecx, LENGTHOF arrayW
- 00000005  BE 00000000 R		mov esi, OFFSET arrayW
- 0000000A  BF 00000008 R		mov edi, OFFSET arrayD
+ 00000000  B9 00000004			mov ecx, LENGTHOF arrayW		; Set ECX register to size of array for L1 loop count down
+ 00000005  BE 00000000 R		mov esi, OFFSET arrayW			; point ESI register to arrayW
+ 0000000A  BF 00000008 R		mov edi, OFFSET arrayD			; point EDI register to arrayD
 
+													; BEGIN LOOP
  0000000F			L1:
- 0000000F  B8 00000004			mov eax, LENGTHOF arrayW
- 00000014  2B C1			sub eax, ecx
- 00000016  6B C0 02			imul eax, TYPE arrayW
+ 0000000F  B8 00000004			mov eax, LENGTHOF arrayW		; move length of arrayW to EAX
+ 00000014  2B C1			sub eax, ecx 					; subtract the ECX register from EAX - result is how many words from the beginning to copy
+ 00000016  6B C0 02			imul eax, TYPE arrayW			; multiply the word count by the size of arrayW to know where to copy from
 
- 00000019  66| 8B 1C 30			mov bx, [esi+eax]
- 0000001D  0F B7 D3			movzx edx, bx
- 00000020  89 14 38			mov [edi+eax], edx
+ 00000019  66| 8B 1C 30			mov bx, [esi+eax]				; copy the correct word to BX register
+ 0000001D  0F B7 D3			movzx edx, bx 					; copy to EDX register and zero extend the value
+ 00000020  6B C0 02			imul eax, 2						; multiply the word count by 2 for dword count
+ 00000023  89 14 38			mov [edi+eax], edx 				; move the zero extended result of EDX register to the correct position in arrayD
+ 00000026  8B 15 00000008 R		mov edx, arrayD
 
- 00000023  E2 EA			LOOP L1
+ 0000002C  E2 E1			LOOP L1							; END LOOP
 
 					invoke ExitProcess,0
- 00000025  6A 00	   *	    push   +000000000h
- 00000027  E8 00000000 E   *	    call   ExitProcess
- 0000002C			main endp
+ 0000002E  6A 00	   *	    push   +000000000h
+ 00000030  E8 00000000 E   *	    call   ExitProcess
+ 00000035			main endp
 				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/10/15 18:48:03
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/17/15 14:45:31
 lab4.2.asm						     Symbols 2 - 1
 
 
@@ -54,7 +57,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 DWord	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 0000000C DWord	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000002C DWord	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000035 DWord	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -62,7 +65,7 @@ Procedures, parameters, and locals:
                 N a m e                 Type     Value    Attr
 
 ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000002C Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000035 Public STDCALL
   L1 . . . . . . . . . . . . . .	L Near	 0000000F _TEXT	
 
 
