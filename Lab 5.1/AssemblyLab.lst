@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/23/15 19:56:07
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/24/15 15:28:56
 lab5.1.asm						     Page 1 - 1
 
 
@@ -33,42 +33,60 @@ lab5.1.asm						     Page 1 - 1
 			      C 
 
  00000000			.data
- 00000000 53 54 52 49 4E	prompt BYTE "STRING ",0
+ 00000000 04			LoopCount BYTE 4h
+ 00000001 00			y BYTE 0h
+ 00000002 00			x BYTE 0h
+ 00000003 53 54 52 49 4E	prompt BYTE "STRING ",0
 	   47 20 00
 
  00000000			.code
- 00000000			main PROC 
- 00000000  B9 00000003			mov ecx, 3h
+				; moves the cursor down one line
+ 00000000			nextLine PROC
+					; Sets cursor position
+ 00000000  8A 35 00000001 R		mov dh, y												; set the Y coordinates
+ 00000006  8A 15 00000002 R		mov dl, x												; set the X coordinates
+ 0000000C  E8 00000000 E		Call Gotoxy												; move the cursor
+ 00000011  FE 05 00000001 R		inc y													; increment the row
 
- 00000005			COLORLOOP:
-					; Set Cursor Position
- 00000005  BA 00000000			mov edx, 0
- 0000000A  B6 03			mov dh, 3h
- 0000000C  2A F1			sub dh, cl
- 0000000E  E8 00000000 E		call Gotoxy
+ 00000017  C3				ret
+ 00000018			nextLine ENDP
 
-					; generate a back color
- 00000013  8B D9			mov ebx, ecx
- 00000015  6B DB 04			imul ebx, 4
+				; generate a color combination
+ 00000018			genColor PROC
+ 00000018  8B D9			mov ebx, ecx											; Use ECX to have a different background color
+ 0000001A  6B DB 10			imul ebx, 16											; multiply by 16 to get complete color byte
+ 0000001D  B8 0000000E			mov eax, yellow											; move yellow constant into EAX register for use by Set Text Color function	
+ 00000022  03 C3			add eax, ebx											; Add background color to it
+ 00000024  E8 00000000 E		call SetTextColor										; set color
 
-					; use yellow foreground color
- 00000018  B8 0000000E			mov eax, yellow
- 0000001D  03 C3			add eax, ebx
+ 00000029  C3				ret
+ 0000002A			genColor ENDP
 
-					; set color
- 0000001F  E8 00000000 E		call SetTextColor ;yellow + (eax)
+ 0000002A			main PROC 
+ 0000002A  0F B6 0D			movzx ecx, LoopCount									; set ECX register for number of loop iterations
+	   00000000 R
 					
+ 00000031  E8 FFFFFFCA			call nextLine											; Set Cursor Position
+ 00000036  E8 FFFFFFDD			call genColor											; generate a color combination
+ 0000003B			COLORLOOP:
 					; write string
- 00000024  BA 00000000 R		mov edx, OFFSET prompt
- 00000029  E8 00000000 E		call WriteString
+ 0000003B  BA 00000003 R		mov edx, OFFSET prompt									; move EDX register to position of the prompt in memory
+ 00000040  E8 00000000 E		call WriteString										; call write string function to output string to console
+					
+ 00000045  E8 FFFFFFB6			call nextLine											; Set Cursor Position
+ 0000004A  E8 FFFFFFC9			call genColor											; generate a color combination
 
- 0000002E  E2 D5			LOOP COLORLOOP
+ 0000004F  E2 EA			LOOP COLORLOOP											; Loop
+					
+ 00000051  E8 FFFFFFC2			call genColor											; generate a color combination
+ 00000056  E8 00000000 E		Call WaitMsg											; use WaitMsg function to allow user to view console before exiting
+
 					exit
- 00000030  6A 00	   *	    push   +000000000h
- 00000032  E8 00000000 E   *	    call   ExitProcess
- 00000037			main ENDP
+ 0000005B  6A 00	   *	    push   +000000000h
+ 0000005D  E8 00000000 E   *	    call   ExitProcess
+ 00000062			main ENDP
 				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/23/15 19:56:07
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/24/15 15:28:56
 lab5.1.asm						     Symbols 2 - 1
 
 
@@ -162,8 +180,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000008 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000037 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000000B Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000062 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -270,8 +288,10 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000037 Public STDCALL
-  COLORLOOP  . . . . . . . . . .	L Near	 00000005 _TEXT	
+genColor . . . . . . . . . . . .	P Near	 00000018 _TEXT	Length= 00000012 Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 0000002A _TEXT	Length= 00000038 Public STDCALL
+  COLORLOOP  . . . . . . . . . .	L Near	 0000003B _TEXT	
+nextLine . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000018 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -363,6 +383,7 @@ KEY_EVENT  . . . . . . . . . . .	Number	 00000001h
 KEY_MASKS  . . . . . . . . . . .	Number	 0000001Fh   
 LEFT_ALT_PRESSED . . . . . . . .	Number	 00000002h   
 LEFT_CTRL_PRESSED  . . . . . . .	Number	 00000008h   
+LoopCount  . . . . . . . . . . .	Byte	 00000000 _DATA	
 MB_ABORTRETRYIGNORE  . . . . . .	Number	 00000002h   
 MB_APPLMODAL . . . . . . . . . .	Number	 00000000h   
 MB_CANCELTRYCONTINUE . . . . . .	Number	 00000006h   
@@ -504,11 +525,13 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-prompt . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+prompt . . . . . . . . . . . . .	Byte	 00000003 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
+x  . . . . . . . . . . . . . . .	Byte	 00000002 _DATA	
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
+y  . . . . . . . . . . . . . . .	Byte	 00000001 _DATA	
 
 	   0 Warnings
 	   0 Errors
