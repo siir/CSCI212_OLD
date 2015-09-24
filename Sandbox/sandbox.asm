@@ -4,21 +4,33 @@
 ; Author: Chad Dreier
 ; Date: 9/3/2015
 
-.386
-.model flat,stdcall
-.stack 4096
-ExitProcess proto,dwExitCode:dword
+
+INCLUDE Irvine32.inc
 
 .data
-
-arrayB BYTE 10h,20h,30h
+aname BYTE "A","B","E"
 
 .code
 main proc
+	mov esi, OFFSET aname
+	mov ecx, LENGTHOF aname
 
-   mov esi,1
-   mov al,arrayB[esi]
+L1:
+	mov al, [esi]
+	inc esi
+	push eax
+	LOOP L1
 
-	invoke ExitProcess,0
+	
+	mov esi, OFFSET aname
+	mov ecx, LENGTHOF aname
+
+L2:
+	pop eax
+	mov [esi], al
+	inc esi
+	LOOP L2
+
+	exit
 main endp
 end main
