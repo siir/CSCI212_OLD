@@ -1,12 +1,17 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/23/15 19:58:13
-sandbox.asm						     Page 1 - 1
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/30/15 21:10:05
+lab6.1.asm						     Page 1 - 1
 
 
-				; Program Name:           sandbox.asm
+				; Program Name:           lab6.1.asm
 
-				; Program Description: test different things
+				; Program Description: Create a procedure that fills an array of doublewords with N random integers,
+				;						making sure the values fall within the range j...k, inclusive. When calling 
+				;						the procedure, pass a pointer to the array that will hold the data, pass N, 
+				;						and pass the values of j and k. Preserve all register values between calls 
+				;						to the procedure. Write a test program that calls the procedure twice, using 
+				;						different values for j and k. Verify your results using a debugger.
 				; Author: Chad Dreier
-				; Date: 9/3/2015
+				; Date: 
 
 
 				INCLUDE Irvine32.inc
@@ -29,36 +34,67 @@ sandbox.asm						     Page 1 - 1
 			      C 
 
  00000000			.data
- 00000000 41 42 45		aname BYTE "A","B","E"
+ = 00000014			N = 20d
+ 00000000  00000014 [		MyArray DWORD N DUP(?)
+	    00000000
+	   ]
 
  00000000			.code
- 00000000			main proc
- 00000000  BE 00000000 R		mov esi, OFFSET aname
- 00000005  B9 00000003			mov ecx, LENGTHOF aname
+ 00000000			main PROC 
 
- 0000000A			L1:
- 0000000A  8A 06			mov al, [esi]
- 0000000C  46				inc esi
- 0000000D  50				push eax
- 0000000E  E2 FA			LOOP L1
-
+ 00000000  E8 00000000 E		Call Randomize								; Call Irvine32 random seed generator
 					
- 00000010  BE 00000000 R		mov esi, OFFSET aname
- 00000015  B9 00000003			mov ecx, LENGTHOF aname
+ 00000005  BE 00000000 R		mov esi, OFFSET MyArray						; pointer of MyArray
+ 0000000A  B9 00000014			mov ecx, N									; length of MyArray
+																; only need to set these once - they will be preserved by function fills
 
- 0000001A			L2:
- 0000001A  58				pop eax
- 0000001B  88 06			mov [esi], al
- 0000001D  46				inc esi
- 0000001E  E2 FA			LOOP L2
+ 0000000F  BB 00F000D3			mov ebx, 000f000d3h							; lower bound of fills call 1
+ 00000014  BA DDAFF23A			mov edx, 0ddaff23ah							; upper bound of fills call 1
+ 00000019  E8 00000016			call fills
+					
+ 0000001E  BB 00AA23D3			mov ebx, 000aa23d3h							; lower bound of fills call 2
+ 00000023  BA DFFFFFFF			mov edx, 0dfffffffh							; upper bound of fills call 2
+ 00000028  E8 00000007			call fills
 
 					exit
- 00000020  6A 00	   *	    push   +000000000h
- 00000022  E8 00000000 E   *	    call   ExitProcess
- 00000027			main endp
-				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/23/15 19:58:13
-sandbox.asm						     Symbols 2 - 1
+ 0000002D  6A 00	   *	    push   +000000000h
+ 0000002F  E8 00000000 E   *	    call   ExitProcess
+ 00000034			main ENDP
+				;---------------------------------------
+				; fills
+				;
+				; Fills array with random integers that
+				;	falls within a range of two numbers
+				; Receives:
+				;	ESI = The array offset
+				;	EBX = The lower bound limit
+				;	EDX = The upper bound limit
+				;	ECX = The length of the array
+				; Returns:
+				;	Nothing. Return value is in memory
+ 00000034			fills PROC
+ 00000034  60				PUSHAD										; save all registers
+					
+ 00000035			FILL:
+ 00000035  E8 00000000 E		call Random32								; Generate random number
+					
+ 0000003A  3B C3			cmp eax,ebx									; compare random number to lower limit
+ 0000003C  72 F7			jb FILL										; redo loop if number is below lower limit
+
+ 0000003E  3B C2			cmp eax,edx									; compare random number to upper limit
+ 00000040  77 F3			ja FILL										; redo loop if numer is above upper limit
+
+ 00000042  89 06			mov [esi], eax								; number is between range! store in memory
+ 00000044  83 C6 04			add esi, TYPE DWORD							; advance pointer to next integer
+
+ 00000047  E2 EC			loop FILL									; loop until all of array is filled
+
+ 00000049  61				POPAD										; restore all registers
+ 0000004A  C3				ret
+ 0000004B			fills ENDP
+				END main
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/30/15 21:10:05
+lab6.1.asm						     Symbols 2 - 1
 
 
 
@@ -151,8 +187,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000003 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000027 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000050 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000004B Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -259,9 +295,9 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000027 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 0000000A _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 0000001A _TEXT	
+fills  . . . . . . . . . . . . .	P Near	 00000034 _TEXT	Length= 00000017 Public STDCALL
+  FILL . . . . . . . . . . . . .	L Near	 00000035 _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000034 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -380,8 +416,10 @@ MB_YESNO . . . . . . . . . . . .	Number	 00000004h
 MENU_EVENT . . . . . . . . . . .	Number	 00000008h   
 MOUSE_EVENT  . . . . . . . . . .	Number	 00000002h   
 MessageBox . . . . . . . . . . .	Text   	 MessageBoxA
+MyArray  . . . . . . . . . . . .	DWord	 00000000 _DATA	
 NULL . . . . . . . . . . . . . .	Number	 00000000h   
 NUMLOCK_ON . . . . . . . . . . .	Number	 00000020h   
+N  . . . . . . . . . . . . . . .	Number	 00000014h   
 OPEN_ALWAYS  . . . . . . . . . .	Number	 00000004h   
 OPEN_EXISTING  . . . . . . . . .	Number	 00000003h   
 PeekConsoleInput . . . . . . . .	Text   	 PeekConsoleInputA
@@ -480,7 +518,6 @@ VK_UP  . . . . . . . . . . . . .	Number	 00000026h
 WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
 WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
 WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
-aname  . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
