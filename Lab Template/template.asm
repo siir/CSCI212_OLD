@@ -1,16 +1,17 @@
-; 32-bit assembly language template
+; Program Name:           lab.asm
 
-.386
-.model flat,stdcall
-.stack 4096
-ExitProcess proto,dwExitCode:dword
+; Program Description: 
+; Author: Chad Dreier
+; Date: 
+
+
+INCLUDE Irvine32.inc
+
+.data
 
 .code
-main proc
+main PROC 
 
-
-
-
-	invoke ExitProcess,0
-main endp
+	exit
+main ENDP
 end main
