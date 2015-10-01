@@ -59,10 +59,10 @@ FILL:
 	call Random32								; Generate random number
 	
 	cmp eax,ebx									; compare random number to lower limit
-	jb FILL										; redo loop if number is below lower limit
+	jbe FILL									; redo loop if number is below lower limit
 
 	cmp eax,edx									; compare random number to upper limit
-	ja FILL										; redo loop if numer is above upper limit
+	jae FILL									; redo loop if numer is above upper limit
 
 	mov [esi], eax								; number is between range! store in memory
 	add esi, TYPE DWORD							; advance pointer to next integer

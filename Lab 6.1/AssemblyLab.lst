@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/30/15 21:10:05
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/01/15 14:37:52
 lab6.1.asm						     Page 1 - 1
 
 
@@ -11,7 +11,9 @@ lab6.1.asm						     Page 1 - 1
 				;						to the procedure. Write a test program that calls the procedure twice, using 
 				;						different values for j and k. Verify your results using a debugger.
 				; Author: Chad Dreier
-				; Date: 
+				; Date: 9/30/2015
+				;
+				; Note: From a profesional high level developer... this is cool stuff!
 
 
 				INCLUDE Irvine32.inc
@@ -60,6 +62,8 @@ lab6.1.asm						     Page 1 - 1
  0000002D  6A 00	   *	    push   +000000000h
  0000002F  E8 00000000 E   *	    call   ExitProcess
  00000034			main ENDP
+
+
 				;---------------------------------------
 				; fills
 				;
@@ -72,6 +76,7 @@ lab6.1.asm						     Page 1 - 1
 				;	ECX = The length of the array
 				; Returns:
 				;	Nothing. Return value is in memory
+				;---------------------------------------
  00000034			fills PROC
  00000034  60				PUSHAD										; save all registers
 					
@@ -79,10 +84,10 @@ lab6.1.asm						     Page 1 - 1
  00000035  E8 00000000 E		call Random32								; Generate random number
 					
  0000003A  3B C3			cmp eax,ebx									; compare random number to lower limit
- 0000003C  72 F7			jb FILL										; redo loop if number is below lower limit
+ 0000003C  76 F7			jbe FILL									; redo loop if number is below lower limit
 
  0000003E  3B C2			cmp eax,edx									; compare random number to upper limit
- 00000040  77 F3			ja FILL										; redo loop if numer is above upper limit
+ 00000040  73 F3			jae FILL									; redo loop if numer is above upper limit
 
  00000042  89 06			mov [esi], eax								; number is between range! store in memory
  00000044  83 C6 04			add esi, TYPE DWORD							; advance pointer to next integer
@@ -93,7 +98,7 @@ lab6.1.asm						     Page 1 - 1
  0000004A  C3				ret
  0000004B			fills ENDP
 				END main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/30/15 21:10:05
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/01/15 14:37:52
 lab6.1.asm						     Symbols 2 - 1
 
 
