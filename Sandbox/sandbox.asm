@@ -12,25 +12,34 @@ aname BYTE "A","B","E"
 
 .code
 main proc
-	mov esi, OFFSET aname
-	mov ecx, LENGTHOF aname
-
-L1:
-	mov al, [esi]
-	inc esi
-	push eax
-	LOOP L1
-
-	
-	mov esi, OFFSET aname
-	mov ecx, LENGTHOF aname
-
+test  al,0
+	 mov edx,1
+   mov eax,7FFFh
+   cmp eax,0FFFF8000h
+   jl  L2
+   mov edx,0
 L2:
-	pop eax
-	mov [esi], al
-	inc esi
-	LOOP L2
 
+mov edx,1   
+   mov eax,7FFFh
+   cmp eax,8000h
+   jb  L1
+   mov edx,0
+L1:
+
+mov bx,29D6h
+xor bx,8181h
+
+mov bx,0649Bh
+or  bx,3Ah
+
+; question 4
+mov bx,0FFFFh
+and bx,6Bh
+
+; question 5
+mov bx,649Bh
+xor bx,0FFFFh
 	exit
 main endp
 end main
