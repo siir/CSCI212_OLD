@@ -17,14 +17,15 @@
 INCLUDE Irvine32.inc
 
 .data
-input BYTE 65h
+input BYTE 10110001b ;65h
 output WORD ?
 
 cnt WORD 0
 
 .code
 main PROC 
-	
+
+	mov eax, 0
 	mov al, input
 	mov esi, OFFSET output
 	call showDecimal
@@ -33,15 +34,37 @@ main PROC
 main ENDP
 
 showDecimal PROC
-	
+
+	mov ecx, 8
+	dec esi
 LOOP0: 
-	shl eax, 1
-	mov BYTE PTR [esi], '0'
-	jnc LOOP1
-	mov BYTE PTR [esi], '1'
-LOOP1:
 	inc esi
+	or al,1
+
+	shl al, 1
+	JNC CF0
+
+CF1:
+	;mov BYTE PTR [esi], '1'
+	push eax
+	mov al, '1'
+	jmp NXT
+CF0:
+	;mov BYTE PTR [esi], '0'
+	push eax
+	mov al, '0'
+NXT:
+	call WriteChar
+	pop eax
 	loop LOOP0
+
+	;LAHF
+	;mov BYTE PTR [esi], cf
+	;jnc LOOP1
+	;mov BYTE PTR [esi], '1'
+;LOOP1:
+	;inc esi
+	;loop LOOP0
 	
 	ret
 showDecimal ENDP
