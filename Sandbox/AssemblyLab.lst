@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/01/15 17:36:33
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 18:08:04
 sandbox.asm						     Page 1 - 1
 
 
@@ -33,40 +33,21 @@ sandbox.asm						     Page 1 - 1
 
  00000000			.code
  00000000			main proc
- 00000000  A8 00		test  al,0
- 00000002  BA 00000001			 mov edx,1
- 00000007  B8 00007FFF		   mov eax,7FFFh
- 0000000C  3D FFFF8000		   cmp eax,0FFFF8000h
- 00000011  7C 05		   jl  L2
- 00000013  BA 00000000		   mov edx,0
- 00000018			L2:
 
- 00000018  BA 00000001		mov edx,1   
- 0000001D  B8 00007FFF		   mov eax,7FFFh
- 00000022  3D 00008000		   cmp eax,8000h
- 00000027  72 05		   jb  L1
- 00000029  BA 00000000		   mov edx,0
- 0000002E			L1:
+ 00000000  BB 00000000		mov ebx, 0
+ 00000005  66| BB 0005		mov bx,5
+ 00000009  F9			stc
+ 0000000A  66| B8 0060		mov ax,60h
+ 0000000E  66| 13 D8		adc bx,ax
 
- 0000002E  66| BB 29D6		mov bx,29D6h
- 00000032  66| 81 F3 8181	xor bx,8181h
 
- 00000037  66| BB 649B		mov bx,0649Bh
- 0000003B  66| 83 CB 3A		or  bx,3Ah
 
-				; question 4
- 0000003F  66| BB FFFF		mov bx,0FFFFh
- 00000043  66| 83 E3 6B		and bx,6Bh
-
-				; question 5
- 00000047  66| BB 649B		mov bx,649Bh
- 0000004B  66| 83 F3 FF		xor bx,0FFFFh
 					exit
- 0000004F  6A 00	   *	    push   +000000000h
- 00000051  E8 00000000 E   *	    call   ExitProcess
- 00000056			main endp
+ 00000011  6A 00	   *	    push   +000000000h
+ 00000013  E8 00000000 E   *	    call   ExitProcess
+ 00000018			main endp
 				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/01/15 17:36:33
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 18:08:04
 sandbox.asm						     Symbols 2 - 1
 
 
@@ -161,7 +142,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 00000003 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000056 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000018 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -268,9 +249,7 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000056 Public STDCALL
-  L2 . . . . . . . . . . . . . .	L Near	 00000018 _TEXT	
-  L1 . . . . . . . . . . . . . .	L Near	 0000002E _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000018 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C

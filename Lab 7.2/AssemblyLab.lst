@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 15:12:55
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 16:50:10
 lab.7.2.asm						     Page 1 - 1
 
 
@@ -38,62 +38,80 @@ lab.7.2.asm						     Page 1 - 1
 			      C 
 
  00000000			.data
- 00000000 B1			input BYTE 10110001b ;65h
- 00000001 0000			output WORD ?
-
- 00000003 0000			cnt WORD 0
+ 00000000 B1			input BYTE 0B1h ; 10110001b
+ 00000001  00000008 [		output BYTE 8 DUP (?)
+	    00
+	   ]
 
  00000000			.code
  00000000			main PROC 
 
  00000000  B8 00000000			mov eax, 0
- 00000005  A0 00000000 R		mov al, input
- 0000000A  BE 00000001 R		mov esi, OFFSET output
- 0000000F  E8 00000007			call showDecimal
+ 00000005  BB 00000000			mov ebx, 0
+ 0000000A  B9 00000000			mov ecx, 0
+ 0000000F  BA 00000000			mov edx, 0
+
+ 00000014  A0 00000000 R		mov al, input
+ 00000019  E8 00000007			call showDecimal
 
 					exit
- 00000014  6A 00	   *	    push   +000000000h
- 00000016  E8 00000000 E   *	    call   ExitProcess
- 0000001B			main ENDP
+ 0000001E  6A 00	   *	    push   +000000000h
+ 00000020  E8 00000000 E   *	    call   ExitProcess
+ 00000025			main ENDP
 
- 0000001B			showDecimal PROC
 
- 0000001B  B9 00000008			mov ecx, 8
- 00000020  4E				dec esi
- 00000021			LOOP0: 
- 00000021  46				inc esi
- 00000022  0C 01			or al,1
 
- 00000024  D0 E0			shl al, 1
- 00000026  73 05			JNC CF0
+				;---------------------------------------
+				; showDecimal
+				;
+				; Writes decimal value of an unsigned
+				;   8 bit number
+				; Receives:
+				;	AL: 8 bit unsigned value to output
+				; Returns:
+				;	nothing
+				;---------------------------------------
+ 00000025			showDecimal PROC
 
- 00000028			CF1:
-					;mov BYTE PTR [esi], '1'
- 00000028  50				push eax
- 00000029  B0 31			mov al, '1'
- 0000002B  EB 03			jmp NXT
- 0000002D			CF0:
-					;mov BYTE PTR [esi], '0'
- 0000002D  50				push eax
- 0000002E  B0 30			mov al, '0'
- 00000030			NXT:
- 00000030  E8 00000000 E		call WriteChar
- 00000035  58				pop eax
- 00000036  E2 E9			loop LOOP0
+ 00000025  BE 00000001 R		mov esi, OFFSET output
+ 0000002A  B1 08			mov cl, 8
+ 0000002C  B3 01			mov bl, 1d
+ 0000002E			LOOP0:
+					;mov dl, 8
+					;sub dl, cl
+					 
+ 0000002E  D0 E8			shr al, 1
+ 00000030  73 04			JNC CF0
 
-					;LAHF
-					;mov BYTE PTR [esi], cf
-					;jnc LOOP1
-					;mov BYTE PTR [esi], '1'
-				;LOOP1:
-					;inc esi
-					;loop LOOP0
+ 00000032			CF1:
+ 00000032  88 1E			mov [esi], bl
+ 00000034  EB 00			jmp NXT
+
+ 00000036			CF0:
+					mov [esi], 0
+lab.7.2.asm(66) : error A2070:invalid instruction operands
+
+ 00000036			NXT:
+					;call WriteChar
 					
- 00000038  C3				ret
- 00000039			showDecimal ENDP
+ 00000036  46				inc esi
+ 00000037  D0 E3			shl bl, 1
+ 00000039  E2 F3			loop LOOP0
+
+ 0000003B  B1 08			mov cl, 8
+				LOOP1
+lab.7.2.asm(76) : error A2008:syntax error : LOOP1
+					mov bl, esi
+lab.7.2.asm(77) : error A2070:invalid instruction operands
+
+
+					loop LOOP1
+lab.7.2.asm(80) : error A2006:undefined symbol : LOOP1
+ 0000003D  C3				ret
+ 0000003E			showDecimal ENDP
 
 				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 15:12:55
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 16:50:10
 lab.7.2.asm						     Symbols 2 - 1
 
 
@@ -187,8 +205,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000005 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000039 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000009 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000041 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -295,14 +313,14 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000001B Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000025 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-showDecimal  . . . . . . . . . .	P Near	 0000001B _TEXT	Length= 0000001E Public STDCALL
-  LOOP0  . . . . . . . . . . . .	L Near	 00000021 _TEXT	
-  CF1  . . . . . . . . . . . . .	L Near	 00000028 _TEXT	
-  CF0  . . . . . . . . . . . . .	L Near	 0000002D _TEXT	
-  NXT  . . . . . . . . . . . . .	L Near	 00000030 _TEXT	
+showDecimal  . . . . . . . . . .	P Near	 00000025 _TEXT	Length= 0000001C Public STDCALL
+  LOOP0  . . . . . . . . . . . .	L Near	 0000002E _TEXT	
+  CF1  . . . . . . . . . . . . .	L Near	 00000032 _TEXT	
+  CF0  . . . . . . . . . . . . .	L Near	 00000036 _TEXT	
+  NXT  . . . . . . . . . . . . .	L Near	 00000036 _TEXT	
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 
 
@@ -522,7 +540,6 @@ WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
-cnt  . . . . . . . . . . . . . .	Word	 00000003 _DATA	
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
@@ -535,11 +552,11 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-output . . . . . . . . . . . . .	Word	 00000001 _DATA	
+output . . . . . . . . . . . . .	Byte	 00000001 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
 
 	   0 Warnings
-	   0 Errors
+	   4 Errors

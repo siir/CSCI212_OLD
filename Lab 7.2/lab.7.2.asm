@@ -17,55 +17,67 @@
 INCLUDE Irvine32.inc
 
 .data
-input BYTE 10110001b ;65h
-output WORD ?
-
-cnt WORD 0
+input BYTE 0B1h ; 10110001b
+output BYTE 8 DUP (?)
 
 .code
 main PROC 
 
 	mov eax, 0
+	mov ebx, 0
+	mov ecx, 0
+	mov edx, 0
+
 	mov al, input
-	mov esi, OFFSET output
 	call showDecimal
 
 	exit
 main ENDP
 
+
+
+;---------------------------------------
+; showDecimal
+;
+; Writes decimal value of an unsigned
+;   8 bit number
+; Receives:
+;	AL: 8 bit unsigned value to output
+; Returns:
+;	nothing
+;---------------------------------------
 showDecimal PROC
 
-	mov ecx, 8
-	dec esi
-LOOP0: 
-	inc esi
-	or al,1
-
-	shl al, 1
+	mov esi, OFFSET output
+	mov cl, 8
+	mov bl, 1d
+LOOP0:
+	;mov dl, 8
+	;sub dl, cl
+	 
+	shr al, 1
 	JNC CF0
 
 CF1:
-	;mov BYTE PTR [esi], '1'
-	push eax
-	mov al, '1'
+	mov [esi], bl
 	jmp NXT
+
 CF0:
-	;mov BYTE PTR [esi], '0'
-	push eax
-	mov al, '0'
+	mov [esi], 0
+
 NXT:
-	call WriteChar
-	pop eax
+	;call WriteChar
+	
+	inc esi
+	shl bl, 1
 	loop LOOP0
 
-	;LAHF
-	;mov BYTE PTR [esi], cf
-	;jnc LOOP1
-	;mov BYTE PTR [esi], '1'
-;LOOP1:
-	;inc esi
-	;loop LOOP0
-	
+	mov cl, 8
+LOOP1
+	mov bl, esi
+
+
+	loop LOOP1
 	ret
 showDecimal ENDP
 

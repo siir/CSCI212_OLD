@@ -1,5 +1,5 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/01/15 18:21:01
-lab.7.2.asm						     Page 1 - 1
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 16:03:39
+lab.7.1.asm						     Page 1 - 1
 
 
 				; Program Name:           lab.7.1.asm
@@ -31,41 +31,39 @@ lab.7.2.asm						     Page 1 - 1
 			      C 
 
  00000000			.data
-
- 00000000 00000000		val1 DWORD ?
- 00000004 0000000A		val2 DWORD 10
- 00000008 00000002		val3 DWORD 2
- 0000000C 00000005		val4 DWORD 5
-
- 00000010  00000002 [		solution DWORD 2 DUP(?)
-	    00000000
-	   ]
+				; val variables
+ 00000000 00000000			val1 DWORD ?
+ 00000004 0000000A			val2 DWORD 10
+ 00000008 00000002			val3 DWORD 2
+ 0000000C 00000005			val4 DWORD 5
 
  00000000			.code
  00000000			main PROC 
 					
+					; (val2 * val3)
  00000000  A1 00000004 R		mov eax, val2
  00000005  F7 25 00000008 R		mul val3
-					;mov product, eax
-					;mov [product+8],edx
 
+					; (val4 - 3)
  0000000B  8B 0D 0000000C R		mov ecx, val4
  00000011  83 E9 03			sub ecx, 3
 
+					; clear dividend
  00000014  BA 00000000			mov edx, 0
+
+					; divide product of left side by right side
  00000019  F7 F1			div ecx
 
- 0000001B  A3 00000010 R		mov [solution], eax
- 00000020  89 15 00000018 R		mov [solution+8],edx
-
+					; store answer into val1
+ 0000001B  A3 00000000 R		mov val1, eax
 
 					exit
- 00000026  6A 00	   *	    push   +000000000h
- 00000028  E8 00000000 E   *	    call   ExitProcess
- 0000002D			main ENDP
+ 00000020  6A 00	   *	    push   +000000000h
+ 00000022  E8 00000000 E   *	    call   ExitProcess
+ 00000027			main ENDP
 				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/01/15 18:21:01
-lab.7.2.asm						     Symbols 2 - 1
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 16:03:39
+lab.7.1.asm						     Symbols 2 - 1
 
 
 
@@ -158,8 +156,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000018 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000002D Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000010 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000027 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -266,7 +264,7 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000002D Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000027 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -500,7 +498,6 @@ lightMagenta . . . . . . . . . .	Number	 0000000Dh
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-solution . . . . . . . . . . . .	DWord	 00000010 _DATA	
 val1 . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
 val2 . . . . . . . . . . . . . .	DWord	 00000004 _DATA	
 val3 . . . . . . . . . . . . . .	DWord	 00000008 _DATA	
