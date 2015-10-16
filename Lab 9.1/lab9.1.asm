@@ -1,4 +1,4 @@
-; Program Name:           lab.asm
+; Program Name:           lab9.1.asm
 
 ; Program Description: Create a procedure named FindLargest that receives two parameters: a pointer 
 ;						to a signed doubleword array, and a count of the array’s length. The procedure 
