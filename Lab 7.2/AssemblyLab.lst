@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 16:50:10
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/15/15 14:34:10
 lab.7.2.asm						     Page 1 - 1
 
 
@@ -38,26 +38,19 @@ lab.7.2.asm						     Page 1 - 1
 			      C 
 
  00000000			.data
- 00000000 B1			input BYTE 0B1h ; 10110001b
- 00000001  00000008 [		output BYTE 8 DUP (?)
-	    00
-	   ]
+ 00000000 E2			input BYTE 0E2h ; set the input value here
 
  00000000			.code
  00000000			main PROC 
 
- 00000000  B8 00000000			mov eax, 0
- 00000005  BB 00000000			mov ebx, 0
- 0000000A  B9 00000000			mov ecx, 0
- 0000000F  BA 00000000			mov edx, 0
-
- 00000014  A0 00000000 R		mov al, input
- 00000019  E8 00000007			call showDecimal
+ 00000000  0F B6 05			movzx eax, input
+	   00000000 R
+ 00000007  E8 00000007			call showDecimal
 
 					exit
- 0000001E  6A 00	   *	    push   +000000000h
- 00000020  E8 00000000 E   *	    call   ExitProcess
- 00000025			main ENDP
+ 0000000C  6A 00	   *	    push   +000000000h
+ 0000000E  E8 00000000 E   *	    call   ExitProcess
+ 00000013			main ENDP
 
 
 
@@ -71,47 +64,120 @@ lab.7.2.asm						     Page 1 - 1
 				; Returns:
 				;	nothing
 				;---------------------------------------
- 00000025			showDecimal PROC
-
- 00000025  BE 00000001 R		mov esi, OFFSET output
- 0000002A  B1 08			mov cl, 8
- 0000002C  B3 01			mov bl, 1d
- 0000002E			LOOP0:
-					;mov dl, 8
-					;sub dl, cl
-					 
- 0000002E  D0 E8			shr al, 1
- 00000030  73 04			JNC CF0
-
- 00000032			CF1:
- 00000032  88 1E			mov [esi], bl
- 00000034  EB 00			jmp NXT
-
- 00000036			CF0:
-					mov [esi], 0
-lab.7.2.asm(66) : error A2070:invalid instruction operands
-
- 00000036			NXT:
-					;call WriteChar
+ 00000013			showDecimal PROC
+					; save all registers
+ 00000013  60				PUSHAD
 					
- 00000036  46				inc esi
- 00000037  D0 E3			shl bl, 1
- 00000039  E2 F3			loop LOOP0
+					; clear out other registers for 
+					;   easier to follow debug
+ 00000014  B4 00			mov ah, 0
+ 00000016  BB 00000000			mov ebx, 0
+ 0000001B  B9 00000000			mov ecx, 0
+ 00000020  BA 00000000			mov edx, 0
 
- 0000003B  B1 08			mov cl, 8
-				LOOP1
-lab.7.2.asm(76) : error A2008:syntax error : LOOP1
-					mov bl, esi
-lab.7.2.asm(77) : error A2070:invalid instruction operands
+					; divisor for converting hex to 
+					;   decimal
+ 00000025  B3 0A			mov bl, 10d
+
+ 00000027			DIVLOOP:
+ 00000027  41				inc ecx									; increment ecx register for later loop to write to console
+
+ 00000028  F6 F3			div bl									; divide by 10
+					
+ 0000002A  50				push eax								; save and blow out remainder
+ 0000002B  B4 00			mov ah, 0
+					
+ 0000002D  3C 00			cmp al, 0								; continue to loop until quotient is 0 (10 cannot divide into al completely)
+ 0000002F  75 F6			jne DIVLOOP
 
 
-					loop LOOP1
-lab.7.2.asm(80) : error A2006:undefined symbol : LOOP1
- 0000003D  C3				ret
- 0000003E			showDecimal ENDP
+ 00000031			WRITELOOP:
+ 00000031  58				pop eax									; return most recent remainder (remainder is the decimal digit in correct order for output)
+ 00000032  E8 00000004			call writeDigit							; call procedure that writes the correct ascii character to console
+
+ 00000037  E2 F8			LOOP WRITELOOP							; continue to loop until all digits outputted to screen
+
+					; return registers to their state
+ 00000039  61				POPAD
+ 0000003A  C3				ret
+ 0000003B			showDecimal ENDP
+
+
+				;---------------------------------------
+				; writeDigit
+				;
+				; Writes decimal digit to console
+				; Receives:
+				;	AH: 8 bit unsigned value 0 - 9
+				; Returns:
+				;	nothing
+				;---------------------------------------
+ 0000003B			writeDigit PROC
+ 0000003B  50				push eax
+
+					; check what number is in AH (should be 0 - 9, otherwise do nothing)
+
+ 0000003C			CMP0:
+ 0000003C  80 FC 00			cmp ah, 0
+ 0000003F  75 04			jne CMP1
+ 00000041  B0 30			mov al, '0'
+ 00000043  EB 4F			jmp DONE
+ 00000045			CMP1:
+ 00000045  80 FC 01			cmp ah, 1
+ 00000048  75 04			jne CMP2
+ 0000004A  B0 31			mov al, '1'
+ 0000004C  EB 46			jmp DONE
+ 0000004E			CMP2:
+ 0000004E  80 FC 02			cmp ah, 2
+ 00000051  75 04			jne CMP3
+ 00000053  B0 32			mov al, '2'
+ 00000055  EB 3D			jmp DONE
+ 00000057			CMP3:
+ 00000057  80 FC 03			cmp ah, 3
+ 0000005A  75 04			jne CMP4
+ 0000005C  B0 33			mov al, '3'
+ 0000005E  EB 34			jmp DONE
+ 00000060			CMP4:
+ 00000060  80 FC 04			cmp ah, 4
+ 00000063  75 04			jne CMP5
+ 00000065  B0 34			mov al, '4'
+ 00000067  EB 2B			jmp DONE
+ 00000069			CMP5:
+ 00000069  80 FC 05			cmp ah, 5
+ 0000006C  75 04			jne CMP6
+ 0000006E  B0 35			mov al, '5'
+ 00000070  EB 22			jmp DONE
+ 00000072			CMP6:
+ 00000072  80 FC 06			cmp ah, 6
+ 00000075  75 04			jne CMP7
+ 00000077  B0 36			mov al, '6'
+ 00000079  EB 19			jmp DONE
+ 0000007B			CMP7:
+ 0000007B  80 FC 07			cmp ah, 7
+ 0000007E  75 04			jne CMP8
+ 00000080  B0 38			mov al, '8'
+ 00000082  EB 10			jmp DONE
+ 00000084			CMP8:
+ 00000084  80 FC 08			cmp ah, 8
+ 00000087  75 04			jne CMP9
+ 00000089  B0 39			mov al, '9'
+ 0000008B  EB 07			jmp DONE
+ 0000008D			CMP9:
+ 0000008D  80 FC 09			cmp ah, 9
+ 00000090  77 07			ja BADNUMBER
+ 00000092  B0 39			mov al, '9'
+
+ 00000094			DONE:
+ 00000094  E8 00000000 E		call WriteChar
+
+ 00000099			BADNUMBER:
+ 00000099  58				pop eax
+
+ 0000009A  C3				ret
+ 0000009B			writeDigit ENDP
 
 				end main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/08/15 16:50:10
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/15/15 14:34:10
 lab.7.2.asm						     Symbols 2 - 1
 
 
@@ -205,8 +271,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000009 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000041 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000001 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000009B Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -313,14 +379,25 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000025 Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000013 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-showDecimal  . . . . . . . . . .	P Near	 00000025 _TEXT	Length= 0000001C Public STDCALL
-  LOOP0  . . . . . . . . . . . .	L Near	 0000002E _TEXT	
-  CF1  . . . . . . . . . . . . .	L Near	 00000032 _TEXT	
-  CF0  . . . . . . . . . . . . .	L Near	 00000036 _TEXT	
-  NXT  . . . . . . . . . . . . .	L Near	 00000036 _TEXT	
+showDecimal  . . . . . . . . . .	P Near	 00000013 _TEXT	Length= 00000028 Public STDCALL
+  DIVLOOP  . . . . . . . . . . .	L Near	 00000027 _TEXT	
+  WRITELOOP  . . . . . . . . . .	L Near	 00000031 _TEXT	
+writeDigit . . . . . . . . . . .	P Near	 0000003B _TEXT	Length= 00000060 Public STDCALL
+  CMP0 . . . . . . . . . . . . .	L Near	 0000003C _TEXT	
+  CMP1 . . . . . . . . . . . . .	L Near	 00000045 _TEXT	
+  CMP2 . . . . . . . . . . . . .	L Near	 0000004E _TEXT	
+  CMP3 . . . . . . . . . . . . .	L Near	 00000057 _TEXT	
+  CMP4 . . . . . . . . . . . . .	L Near	 00000060 _TEXT	
+  CMP5 . . . . . . . . . . . . .	L Near	 00000069 _TEXT	
+  CMP6 . . . . . . . . . . . . .	L Near	 00000072 _TEXT	
+  CMP7 . . . . . . . . . . . . .	L Near	 0000007B _TEXT	
+  CMP8 . . . . . . . . . . . . .	L Near	 00000084 _TEXT	
+  CMP9 . . . . . . . . . . . . .	L Near	 0000008D _TEXT	
+  DONE . . . . . . . . . . . . .	L Near	 00000094 _TEXT	
+  BADNUMBER  . . . . . . . . . .	L Near	 00000099 _TEXT	
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 
 
@@ -552,11 +629,10 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-output . . . . . . . . . . . . .	Byte	 00000001 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
 
 	   0 Warnings
-	   4 Errors
+	   0 Errors
