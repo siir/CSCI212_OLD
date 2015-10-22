@@ -1,9 +1,22 @@
 INCLUDE lab9.1.inc
 
+;---------------------------------------
+; FindLargest
+;
+; Compares values of an array and returns
+;	the largest value
+; Receives:
+;	pArray: Address pointer to start of 
+;			array in memory
+;	arraySize: length of array
+; Returns:
+;	EAX: Largest array index value
+;---------------------------------------
+
 .code
 FindLargest PROC,
 	pArray: PTR DWORD,
-	arraySize: DWORD ;,LOCAL largest: DWORD
+	arraySize: DWORD
 	
 	;PUSHAD
 	

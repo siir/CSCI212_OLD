@@ -15,18 +15,19 @@
 INCLUDE lab9.1.inc
 
 .data
-myArray1 DWORD 100h, 120h, 110h, 200h, 150h, 201h
+myArray1 DWORD 100h, 120h, 110h, 220h, 150h, 201h
 myArray1_LEN DWORD ?
 
 .code
 main PROC 
+	; clear registers for easier debugging
 	mov eax, 0
 	mov ebx, 0
 	mov ecx, 0
 	mov edx, 0
 	
-	mov myArray1_LEN, LENGTHOF myArray1
-	INVOKE FindLargest, ADDR myArray1, myArray1_LEN
+	mov myArray1_LEN, LENGTHOF myArray1					; put length of array into memory
+	INVOKE FindLargest, ADDR myArray1, myArray1_LEN		; call FindLargest with address of array as first parameter and length of array as second
 
 
 

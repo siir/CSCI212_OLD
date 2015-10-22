@@ -1,5 +1,19 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/15/15 18:41:53
-FindLargest.asm						     Page 1 - 1
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/22/15 13:44:28
+lab9.1.asm						     Page 1 - 1
+
+
+				; Program Name:           lab9.1.asm
+
+				; Program Description: Create a procedure named FindLargest that receives two parameters: a pointer 
+				;						to a signed doubleword array, and a count of the array’s length. The procedure 
+				;						must return the value of the largest array member in EAX. Use the PROC directive 
+				;						with a parameter list when declaring the procedure. Preserve all registers 
+				;						(except EAX) that are modified by the procedure. Write a test program that calls 
+				;						FindLargest and passes three different arrays of different lengths. Be sure to 
+				;						include negative values in your arrays. Create a PROTO declaration for FindLargest.
+				;						
+				; Author: Chad Dreier
+				; Date: 10/15/2015
 
 
 				INCLUDE lab9.1.inc
@@ -27,42 +41,39 @@ FindLargest.asm						     Page 1 - 1
 			      C 	arraySize: DWORD
 			      C 
 
+ 00000000			.data
+ 00000000 00000100		myArray1 DWORD 100h, 120h, 110h, 220h, 150h, 201h
+	   00000120
+	   00000110
+	   00000220
+	   00000150
+	   00000201
+ 00000018 00000000		myArray1_LEN DWORD ?
+
  00000000			.code
- 00000000			FindLargest PROC,
-					pArray: PTR DWORD,
-					arraySize: DWORD ;,LOCAL largest: DWORD
+ 00000000			main PROC 
+					; clear registers for easier debugging
+ 00000000  B8 00000000			mov eax, 0
+ 00000005  BB 00000000			mov ebx, 0
+ 0000000A  B9 00000000			mov ecx, 0
+ 0000000F  BA 00000000			mov edx, 0
 					
-					;PUSHAD
-					
- 00000000  55		   *	    push   ebp
- 00000001  8B EC	   *	    mov    ebp, esp
- 00000003  8B 75 08			mov esi, pArray
- 00000006  8B 4D 0C			mov ecx, arraySize
- 00000009  8B 06			mov eax, [esi]
- 0000000B  49				dec ecx
- 0000000C			ARRAY_SCAN:
- 0000000C  83 C6 04			add esi, 4
- 0000000F  8B 1E			mov ebx, [esi]
+ 00000014  C7 05 00000018 R		mov myArray1_LEN, LENGTHOF myArray1					; put length of array into memory
+	   00000006
+					INVOKE FindLargest, ADDR myArray1, myArray1_LEN		; call FindLargest with address of array as first parameter and length of array as second
+ 0000001E  FF 35 00000018 R *	    push   myArray1_LEN
+ 00000024  68 00000000 R   *	    push   OFFSET myArray1
+ 00000029  E8 00000000 E   *	    call   FindLargest
 
- 00000011  3B D8			cmp ebx, eax
- 00000013  7E 02			JLE NOT_GREATER_THAN
 
- 00000015  8B C3			mov eax, ebx
 
- 00000017			NOT_GREATER_THAN:
- 00000017  E2 F3			loop ARRAY_SCAN
-
-					;mov largest, eax
-					;POPAD
-					;mov eax, largest
-
-					ret
- 00000019  C9		   *	    leave  
- 0000001A  C2 0008	   *	    ret    00008h
- 0000001D			FindLargest ENDP
-				END
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/15/15 18:41:53
-FindLargest.asm						     Symbols 2 - 1
+					exit
+ 0000002E  6A 00	   *	    push   +000000000h
+ 00000030  E8 00000000 E   *	    call   ExitProcess
+ 00000035			main ENDP
+				end main
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    10/22/15 13:44:28
+lab9.1.asm						     Symbols 2 - 1
 
 
 
@@ -155,8 +166,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000000 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000001D Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000001C Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000035 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -175,11 +186,7 @@ DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FileTimeToDosDateTime  . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FileTimeToSystemTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-FindLargest  . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000001D Public STDCALL
-  pArray . . . . . . . . . . . .	DWord	 bp + 00000008
-  arraySize  . . . . . . . . . .	DWord	 bp + 0000000C
-  ARRAY_SCAN . . . . . . . . . .	L Near	 0000000C _TEXT	
-  NOT_GREATER_THAN . . . . . . .	L Near	 00000017 _TEXT	
+FindLargest  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FlushConsoleInputBuffer  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FormatMessageA . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetCommandLineA  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -268,6 +275,7 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000035 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -500,6 +508,8 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
+myArray1_LEN . . . . . . . . . .	DWord	 00000018 _DATA	
+myArray1 . . . . . . . . . . . .	DWord	 00000000 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
