@@ -20,13 +20,15 @@ ValB DWORD ?
 .code
 main PROC 
 
+	; Call Euclid (5,20)
 	mov ValA, 5
 	mov ValB, 20
 	INVOKE Euclid, ValA, ValB
 	mov eax, ebx
 	call WriteDec
 	Call CrLf
-
+	
+	; Call Euclid (24,18)
 	mov ValA, 24
 	mov ValB, 18
 	INVOKE Euclid, ValA, ValB
@@ -34,6 +36,7 @@ main PROC
 	call WriteDec
 	Call CrLf
 	
+	; Call Euclid (11,7)
 	mov ValA, 11
 	mov ValB, 7
 	INVOKE Euclid, ValA, ValB
@@ -41,6 +44,7 @@ main PROC
 	call WriteDec
 	Call CrLf
 	
+	; Call Euclid (432,226)
 	mov ValA, 432
 	mov ValB, 226
 	INVOKE Euclid, ValA, ValB
@@ -48,6 +52,7 @@ main PROC
 	call WriteDec
 	Call CrLf
 	
+	; Call Euclid (26,13)
 	mov ValA, 26
 	mov ValB, 13
 	INVOKE Euclid, ValA, ValB
