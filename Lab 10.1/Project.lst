@@ -1,0 +1,103 @@
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/02/15 17:49:32
+lab2.3.asm						     Page 1 - 1
+
+
+				; Program Name:           lab2.3.asm
+
+				; Program Description: Write a program that defines symbolic names for several string literals (characters between quotes). Use each symbolic name in a variable definition.
+				; Author: Chad Dreier
+				; Date: 8/31/2015
+
+				.386
+				.model flat,stdcall
+				.stack 4096
+				ExitProcess proto,dwExitCode:dword
+
+ 00000000			.data
+ = 'John'			NAME1 TEXTEQU <'John'>
+ = 'Ben'			NAME2 TEXTEQU <'Ben'>
+ = 'Abraham'			NAME3 TEXTEQU <'Abraham'>
+ = 'Chad'			NAME4 TEXTEQU <'Chad'>
+ = 'Brett'			NAME5 TEXTEQU <'Brett'>
+ = 'Joe'			NAME6 TEXTEQU <'Joe'>
+ = 'Roland'			NAME7 TEXTEQU <'Roland'>
+ = 'Rod'			NAME8 TEXTEQU <'Rod'>
+ = 'Fides'			NAME9 TEXTEQU <'Fides'>
+
+				; "The IT Team consists of John, Ben, Abraham, Chad, Brett, Joe, Roland, Rod, Fides."
+ 00000000 54 68 65 20 49	it_team BYTE "The IT Team consists of ", NAME1, ", ", NAME2, ", ", NAME3, ", ", NAME4, ", ", NAME5, ", ", NAME6, ", ", NAME7, ", ", NAME8, " and ", NAME9, ".", 0
+	   54 20 54 65 61
+	   6D 20 63 6F 6E
+	   73 69 73 74 73
+	   20 6F 66 20 4A
+	   6F 68 6E 2C 20
+	   42 65 6E 2C 20
+	   41 62 72 61 68
+	   61 6D 2C 20 43
+	   68 61 64 2C 20
+	   42 72 65 74 74
+	   2C 20 4A 6F 65
+	   2C 20 52 6F 6C
+	   61 6E 64 2C 20
+	   52 6F 64 20 61
+	   6E 64 20 46 69
+	   64 65 73 2E 00
+
+ 00000000			.code
+ 00000000			main proc
+
+					invoke ExitProcess,0
+ 00000000  6A 00	   *	    push   +000000000h
+ 00000002  E8 00000000 E   *	    call   ExitProcess
+ 00000007			main endp
+				end main
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    09/02/15 17:49:32
+lab2.3.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 DWord	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000055 DWord	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000007 DWord	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000007 Public STDCALL
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000003h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+NAME1  . . . . . . . . . . . . .	Text   	 'John'
+NAME2  . . . . . . . . . . . . .	Text   	 'Ben'
+NAME3  . . . . . . . . . . . . .	Text   	 'Abraham'
+NAME4  . . . . . . . . . . . . .	Text   	 'Chad'
+NAME5  . . . . . . . . . . . . .	Text   	 'Brett'
+NAME6  . . . . . . . . . . . . .	Text   	 'Joe'
+NAME7  . . . . . . . . . . . . .	Text   	 'Roland'
+NAME8  . . . . . . . . . . . . .	Text   	 'Rod'
+NAME9  . . . . . . . . . . . . .	Text   	 'Fides'
+it_team  . . . . . . . . . . . .	Byte	 00000000 _DATA	
+
+	   0 Warnings
+	   0 Errors
